@@ -1,0 +1,27 @@
+<head>
+
+</head>
+
+<div>
+
+  <img src="assets/images/brasil.PNG" width="600" height="600">
+
+  <button style="position: relative; right: 245px; bottom: 100px" mat-raised-button [color]="buttonColor" (click)="buttonColor = 'warn'" (click)="obterRota('FLN')">FLN</button>
+  <button style="position: relative; right: 300px; bottom: 140px" mat-raised-button [color]="buttonColor" (click)="buttonColor = 'warn'"  (click)="obterRota('CWB')">CWB</button>
+
+</div>
+
+
+
+
+<div class="divPath" [hidden]="(origem == '')">
+  <p id="textoOrigem">Origem: {{origem}} </p>
+
+  <p id="textoDestino">Destino: {{destino}} </p>
+
+  <p id="textoRota" >Rota: {{distancia}} </p>
+
+</div>
+
+
+

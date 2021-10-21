@@ -1,28 +1,28 @@
 const express = require('express');
 const app = express(), bodyParser = require("body-parser");
 const port = 3080;
-const pg = require('pg');
-const client = new pg.Client("postgres://postgres:postgres@localhost:5432/shortest-path");
 const service = require('./service');
 
-app.use(bodyParser.json());
-
-app.post('/path/obter-caminho', (req, res) => {
-  if (!Object.is(req.body, null)) {
-    client.connect(function (err) {
-      if (err) throw err;
-      client.query("SELECT * FROM path WHERE path.origem LIKE " + "'" + req.body.origem + "'", function (err, result){
-        if (err) throw err;
-        res.json(result);
-      });
-    });
-  };
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
+
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   service.buscarTodosCaminhos(function (result) {
     res.json(result);
   });
+});
+
+app.post('/path/calcular-caminho', (req, res) => {
+  if (!(Object.is(req.body, null)) && !(Object.is(req.body, ''))) {
+    service.retornarCaminho(req.body.origem, req.body.destino, function (result) {
+      res.json(result);
+    });
+  }
 });
 
 app.listen(port, () => {
