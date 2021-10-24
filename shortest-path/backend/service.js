@@ -1,5 +1,4 @@
 const pg = require('pg');
-const client = new pg.Client("postgres://postgres:postgres@localhost:5432/shortest-path");
 const pool = new pg.Pool({user: 'postgres',host: 'localhost',database: 'shortest-path',password: 'admin',port: 5432});
 const Path = require('./dto/pathDTO');
 const Resultado = require('./dto/resultadoDTO');
@@ -23,66 +22,65 @@ module.exports = {
     });
   },
 
-  buscarConexoes: function (origem, result) {
-    pool.connect(function (err, client, done) {
-      if (err) throw err
-      client.query("select * from path where path.origem like" + "'" + origem + "'", function (err, res) {
-        done();
-        if (err) throw err
-        if (!Object.is(res.rows, null)) {
-          let path = new Array();
-          res.rows.forEach(temp => {
-            path.push(new Path(temp.origem, temp.distancia, temp.destino));
-          })
-          console.log(path);
-          return result(path);
-        }
-      });
-    });
+  buscarConexoes: async function (origem) {
+    try {
+      const client = await pool.connect();
+      let result = await client.query("select * from path where path.origem like" + "'" + origem + "'");
+      let path = [];
+      result.rows.forEach(temp => {
+        path.push(new Path(temp.origem, temp.distancia, temp.destino));
+      })
+      return path;
+    } catch (err){
+      console.log(err);
+    }
   },
 
-  retornarCaminho: function (origem, destino, result) {
-    console.log(`chegou service 1: ${origem}, ${destino}`);
-    this.calcularCaminho(origem, destino, function (res) {
-      return result(res);
-    });
+
+
+  // buscarConexoes: function (origem) {
+  //   let path = new Array();
+  //   pool.connect(async function (err, client, done) {
+  //     if (err) throw err
+  //     await client.query("select * from path where path.origem like" + "'" + origem + "'", function (err, res) {
+  //       done();
+  //       console.log(res.rows);
+  //       if (err) throw err
+  //       res.rows.forEach(temp => {
+  //         path.push(new Path(temp.origem, temp.distancia, temp.destino));
+  //       })
+  //       console.log(path);
+  //     });
+  //   });
+  //   return path;
+  // },
+
+  retornarCaminho: async function (origem, destino) {
+    return await this.calcularCaminho(origem, destino);
   },
 
-  calcularCaminho: function (origem, destino, result) {
-    console.log(`chegou service 2: ${origem}, ${destino}`);
+  calcularCaminho: async function (origem, destino) {
     let distanciaTotal = 0;
-    let conexoes = new Array();
+    let conexoes = [];
     let final = '';
-    result = new Array();
-    this.buscarConexoes(origem, function (result) {
-      conexoes = result;
-    });
-
+    let result = [];
+    let pathTemp;
+    let distTemp = Infinity;
+    conexoes = await this.buscarConexoes(origem);
     while (final != destino) {
-      console.log(`chegou while 1: ${final}`);
-      let distTemp = Infinity;
-      let pathTemp = conexoes[0];
-      console.log(conexoes[0]);
+      pathTemp = conexoes[0];
       for (let p in conexoes) {
         if (distTemp > p.distanciaPath) {
           distTemp = p.distanciaPath;
           pathTemp = p;
         }
       }
-
       distanciaTotal += distTemp;
-      console.log(`distancia total: ${distanciaTotal}`)
-      final = pathTemp.origemPath;
-      console.log(`final: ${final}`)
+      final = pathTemp.destinoPath;
       result.push(pathTemp);
-      console.log(`result: ${result}`)
-      this.buscarConexoes(pathTemp.origemPath, function (result) {
-        conexoes = result;
-      });
-
-      console.log(`conexoes: ${conexoes}`)
+      conexoes = await this.buscarConexoes(final);
     }
-    return result(new Resultado(result,distanciaTotal));
-  }
+    return new Resultado(result,distanciaTotal);
+  },
 
 }

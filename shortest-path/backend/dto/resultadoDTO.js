@@ -1,6 +1,6 @@
 const Path = require('./pathDTO');
 
-module.exports = class Path {
+module.exports = class Resultado {
 
   constructor(path, distanciaTotal) {
     this.path = path;
