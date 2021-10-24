@@ -1,2 +1,2 @@
 # shortest-path
-aplicação do algoritmo de Djikstra
+angular + nodejs + postgres implementation of Dijkstra's algorithm
