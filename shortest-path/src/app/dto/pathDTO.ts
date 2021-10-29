@@ -1,14 +1,14 @@
 export class PathDTO {
-  origem: string;
-  distancia: number;
-  destino: string;
+  origemPath: string;
+  distanciaPath: number;
+  destinoPath: string;
 
   constructor(origem: string, distancia: number, destino: string) {
     {
-      this.origem = origem;
-      this.distancia = distancia;
-      this.destino = destino;
+      this.origemPath = origem;
+      this.distanciaPath = distancia;
+      this.destinoPath = destino;
     }
   }
-  
+
 }

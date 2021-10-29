@@ -19,11 +19,11 @@ app.get('/', async (req, res) => {
   res.json(r);
 });
 
-app.post('/path/calcular-caminho', (req, res) => {
+app.post('/path/calcular-caminho', async (req, res) => {
   if (!(Object.is(req.body, null)) && !(Object.is(req.body, ''))) {
-    service.retornarCaminho(req.body.origem, req.body.destino, function (result) {
-      res.json(result);
-    });
+    const r = await service.retornarCaminho(req.body.origem, req.body.destino);
+    console.log(r);
+    res.json(r);
   }
 });
 

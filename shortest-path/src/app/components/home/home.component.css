@@ -1,12 +1,22 @@
-.divPath {
-  float: right;
-  margin-right: 65%;
-}
-
 .mat-raised-button {
   height: 27px;
   min-width: 35px;
   line-height: 30px;
   width: 35px;
   padding: 0px;
+}
+
+table {
+  width: 80%;
+}
+
+table .header {
+  text-align: center;
+  margin: 10px;
+}
+
+#distanciaTotal {
+  font-size: 16px;
+  color: black;
+  border: 1px solid lightgray;
 }

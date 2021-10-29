@@ -36,25 +36,6 @@ module.exports = {
     }
   },
 
-
-
-  // buscarConexoes: function (origem) {
-  //   let path = new Array();
-  //   pool.connect(async function (err, client, done) {
-  //     if (err) throw err
-  //     await client.query("select * from path where path.origem like" + "'" + origem + "'", function (err, res) {
-  //       done();
-  //       console.log(res.rows);
-  //       if (err) throw err
-  //       res.rows.forEach(temp => {
-  //         path.push(new Path(temp.origem, temp.distancia, temp.destino));
-  //       })
-  //       console.log(path);
-  //     });
-  //   });
-  //   return path;
-  // },
-
   retornarCaminho: async function (origem, destino) {
     return await this.calcularCaminho(origem, destino);
   },
@@ -69,17 +50,19 @@ module.exports = {
     conexoes = await this.buscarConexoes(origem);
     while (final != destino) {
       pathTemp = conexoes[0];
-      for (let p in conexoes) {
-        if (distTemp > p.distanciaPath) {
+      conexoes.forEach(p => {
+        if (distTemp > (p.distanciaPath)) {
           distTemp = p.distanciaPath;
           pathTemp = p;
         }
-      }
+      });
       distanciaTotal += distTemp;
       final = pathTemp.destinoPath;
       result.push(pathTemp);
       conexoes = await this.buscarConexoes(final);
     }
+    console.log(`result:  ${result}`);
+    console.log(`distancia total: ${distanciaTotal}`)
     return new Resultado(result,distanciaTotal);
   },
 
