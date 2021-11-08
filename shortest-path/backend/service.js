@@ -2,6 +2,7 @@ const pg = require('pg');
 const pool = new pg.Pool({user: 'postgres',host: 'localhost',database: 'shortest-path',password: 'admin',port: 5432});
 const Path = require('./dto/pathDTO');
 const Resultado = require('./dto/resultadoDTO');
+const {not} = require("rxjs/internal-compatibility");
 
 module.exports = {
 
@@ -40,6 +41,16 @@ module.exports = {
     return await this.calcularCaminho(origem, destino);
   },
 
+  verificarIfExists: async function(list, elemento) {
+    let notExist = true;
+    list.forEach(r => {
+      if (r.origemPath === elemento.origemPath) {
+        notExist = false;
+      }
+      return notExist;
+    })
+  },
+
   calcularCaminho: async function (origem, destino) {
     let distanciaTotal = 0;
     let conexoes = [];
@@ -49,11 +60,14 @@ module.exports = {
     let distTemp = Infinity;
     conexoes = await this.buscarConexoes(origem);
     while (final != destino) {
+      console.log('entrou while')
       pathTemp = conexoes[0];
       conexoes.forEach(p => {
-        if (distTemp > (p.distanciaPath)) {
-          distTemp = p.distanciaPath;
-          pathTemp = p;
+        if (this.verificarIfExists(result, p)){
+          if (distTemp > (p.distanciaPath)) {
+            distTemp = p.distanciaPath;
+            pathTemp = p;
+          }
         }
       });
       distanciaTotal += distTemp;

@@ -20,3 +20,8 @@ table .header {
   color: black;
   border: 1px solid lightgray;
 }
+
+button {
+  margin: 0px !important;
+  padding: 0px !important;
+}

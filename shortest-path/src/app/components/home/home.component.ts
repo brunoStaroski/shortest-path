@@ -35,7 +35,10 @@ export class HomeComponent implements OnInit {
   }
 
   obterRota(nomeAeroporto: string) {
-    if (Object.is(this.origem, '')) {
+    if (!Object.is(this.origem, '') && !Object.is(this.destino, '')) {
+      this.inicializarObjetos();
+      this.origem = nomeAeroporto;
+    } else if (Object.is(this.origem, '')) {
       this.origem = nomeAeroporto;
     } else {
       this.destino = nomeAeroporto;
