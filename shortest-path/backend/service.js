@@ -1,8 +1,8 @@
 const pg = require('pg');
-const pool = new pg.Pool({user: 'postgres',host: 'localhost',database: 'shortest-path',password: 'admin',port: 5432});
+const pool = new pg.Pool({user: 'postgres',host: 'localhost',database: 'shortest-path',password: 'docker',port: 5432});
 const Path = require('./dto/pathDTO');
 const Resultado = require('./dto/resultadoDTO');
-const {not} = require("rxjs/internal-compatibility");
+const isNull = require("util");
 
 module.exports = {
 
@@ -23,15 +23,22 @@ module.exports = {
     });
   },
 
-  buscarConexoes: async function (origem) {
+  buscarConexoes: async function (origem, visitados) {
     try {
       const client = await pool.connect();
-      let result = await client.query("select * from path where path.origem like" + "'" + origem + "'");
+      let result = null;
+      if (visitados == null) {
+        let result = await client.query("select * from path where path.origem like" + "'" + origem + "'");
+      } else {
+        let result = await client.query("select * from path where path.origem like" + "'" + origem + "' and path.destino not in (?)", visitados);
+      }
       let path = [];
-      result.rows.forEach(temp => {
-        path.push(new Path(temp.origem, temp.distancia, temp.destino));
-      })
-      return path;
+      if (result != null) {
+        result.rows.forEach(temp => {
+          path.push(new Path(temp.origem, temp.distancia, temp.destino));
+        })
+        return path;
+      }
     } catch (err){
       console.log(err);
     }
@@ -41,16 +48,6 @@ module.exports = {
     return await this.calcularCaminho(origem, destino);
   },
 
-  verificarIfExists: async function(list, elemento) {
-    let notExist = true;
-    list.forEach(r => {
-      if (r.origemPath === elemento.origemPath) {
-        notExist = false;
-      }
-      return notExist;
-    })
-  },
-
   calcularCaminho: async function (origem, destino) {
     let distanciaTotal = 0;
     let conexoes = [];
@@ -58,22 +55,21 @@ module.exports = {
     let result = [];
     let pathTemp;
     let distTemp = Infinity;
-    conexoes = await this.buscarConexoes(origem);
+    let visitados = [];
+    conexoes = await this.buscarConexoes(origem, null);
     while (final != destino) {
-      console.log('entrou while')
       pathTemp = conexoes[0];
       conexoes.forEach(p => {
-        if (this.verificarIfExists(result, p)){
-          if (distTemp > (p.distanciaPath)) {
-            distTemp = p.distanciaPath;
-            pathTemp = p;
-          }
+        if (distTemp > (p.distanciaPath)) {
+          distTemp = p.distanciaPath;
+          pathTemp = p;
         }
       });
       distanciaTotal += distTemp;
       final = pathTemp.destinoPath;
+      visitados.push(pathTemp.destinoPath);
       result.push(pathTemp);
-      conexoes = await this.buscarConexoes(final);
+      conexoes = await this.buscarConexoes(final, visitados);
     }
     console.log(`result:  ${result}`);
     console.log(`distancia total: ${distanciaTotal}`)
