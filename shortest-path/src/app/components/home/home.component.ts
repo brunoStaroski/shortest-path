@@ -3,11 +3,15 @@ import {PathService} from "../../services/path.service";
 import {ThemePalette} from "@angular/material/core";
 import {ResultadoDTO} from "../../dto/resultadoDTO";
 import {PathDTO} from "../../dto/pathDTO";
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MessageService} from "primeng/api";
+
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  providers: [MessageService]
 })
 
 
@@ -21,13 +25,15 @@ export class HomeComponent implements OnInit {
 
   displayedColumns: string[] = ['origem', 'distancia', 'destino'];
 
-  constructor(private PathService: PathService) { }
+  constructor(private PathService: PathService,
+              private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.inicializarObjetos();
   }
 
   private inicializarObjetos() {
+    this.messageService.clear();
     this.origem = '';
     this.destino = '';
     this.distancia = '';
@@ -45,12 +51,15 @@ export class HomeComponent implements OnInit {
     }
 
     if (!Object.is(this.origem, '') && !Object.is(this.destino, '')) {
-       this.PathService.calcularRota(this.origem, this.destino).subscribe((response : any) => {
-         this.resultado = response.valueOf();
-         this.resultado = new ResultadoDTO(response.valueOf().path, response.valueOf().distanciaTotal);
-         console.log(this.resultado);
-       });
+      if (this.origem === this.destino) { //odeio - MUITO - QA
+        this.messageService.add({severity:'warning', summary:'Aviso', detail:'Por favor selecione aeroportos diferentes'});
+      } else {
+        this.PathService.calcularRota(this.origem, this.destino).subscribe((response : any) => {
+          this.resultado = response.valueOf();
+          this.resultado = new ResultadoDTO(response.valueOf().path, response.valueOf().distanciaTotal);
+          console.log(this.resultado);
+        });
+      }
     }
   }
-
 }

@@ -9,6 +9,7 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {HttpClientModule} from "@angular/common/http";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTableModule} from "@angular/material/table";
+import {MessagesModule} from "primeng/messages";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {MatTableModule} from "@angular/material/table";
         MatSnackBarModule,
         HttpClientModule,
         MatButtonModule,
-        MatTableModule
+        MatTableModule,
+        MessagesModule
     ],
   providers: [],
   bootstrap: [AppComponent]
