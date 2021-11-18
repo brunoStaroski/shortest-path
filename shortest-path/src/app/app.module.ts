@@ -10,6 +10,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTableModule} from "@angular/material/table";
 import {MessagesModule} from "primeng/messages";
+import {ToastModule} from "primeng/toast";
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {MessagesModule} from "primeng/messages";
         HttpClientModule,
         MatButtonModule,
         MatTableModule,
-        MessagesModule
+        MessagesModule,
+        ToastModule
     ],
   providers: [],
   bootstrap: [AppComponent]

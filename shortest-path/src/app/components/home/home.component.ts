@@ -3,8 +3,8 @@ import {PathService} from "../../services/path.service";
 import {ThemePalette} from "@angular/material/core";
 import {ResultadoDTO} from "../../dto/resultadoDTO";
 import {PathDTO} from "../../dto/pathDTO";
-import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MessageService} from "primeng/api";
+import {Message} from 'primeng//api';
 
 
 @Component({
@@ -52,7 +52,9 @@ export class HomeComponent implements OnInit {
 
     if (!Object.is(this.origem, '') && !Object.is(this.destino, '')) {
       if (this.origem === this.destino) { //odeio - MUITO - QA
-        this.messageService.add({severity:'warning', summary:'Aviso', detail:'Por favor selecione aeroportos diferentes'});
+        this.messageService.add({severity:'warn', summary:'Aviso', detail:'Por favor selecione aeroportos diferentes'});
+        this.origem = '';
+        this.destino = '';
       } else {
         this.PathService.calcularRota(this.origem, this.destino).subscribe((response : any) => {
           this.resultado = response.valueOf();
